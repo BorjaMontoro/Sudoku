@@ -40,11 +40,9 @@ public class MainActivity extends AppCompatActivity{
                             spinner.setTag("vale, no mas bugs");
                             return;
                         }
-                        Log.i("INFO","Spinner modificat");
-                        Context context = getApplicationContext();
-                        CharSequence text="Fila: "+ fila +" Columna: " + columna + " Nuevo valor: ";
-                        Toast toast=Toast.makeText(context, text, Toast.LENGTH_SHORT);
-                        toast.show();
+                        String texto = spinner.getSelectedItem().toString();
+                        Toast.makeText(MainActivity.this, "Fila: "+ fila +" Columna: " + columna + " Nuevo valor: "+texto, Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override
