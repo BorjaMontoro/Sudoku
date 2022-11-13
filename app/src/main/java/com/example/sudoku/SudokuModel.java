@@ -1,38 +1,84 @@
 package com.example.sudoku;
 
 
-import java.util.Arrays;
-import java.util.Random;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class SudokuModel {
 
-    private static int [][] matriz= new int[9][9];
+public class SudokuModel extends AppCompatActivity {
+
+    private static int[] valores = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    private static int [][] sudoku= new int[9][9];
+    private static int[][] sudokuResuelto = new int[9][9];
 
     public int getVal(int fila, int columna) {
-        return matriz[fila][columna];
+        return sudoku[fila][columna];
     }
-    public int setVal(int fila, int columna, int valor) {
-        int valorPrevio = matriz[fila][columna];
-        matriz[fila][columna] = valor;
-        if (!comprovaFila(fila)){
-            matriz[fila][columna] = valorPrevio;
-            return -1;
+    public boolean setVal(int fila, int columna, int valor) {
+        int valorPrevio = sudoku[fila][columna];
+        sudoku[fila][columna] = valor;
+        if (sudoku[fila][columna] != sudokuResuelto[fila][columna]){
+            sudoku[fila][columna] = valorPrevio;
+            return false;
+        } else {
+            sudoku[fila][columna] = valor;
+            return true;
         }
-        if (!comprovaCol(columna)){
-            matriz[fila][columna] = valorPrevio;
-            return -1;
-        }
-        if (!comprovaQuad(fila,columna)){
-            matriz[fila][columna] = valorPrevio;
-            return -1;}
-        return 0;
     }
 
-    public boolean comprovaFila(int fila) {
+    public boolean compruebaSudoku(){
+        boolean estaCorrecto = true;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if(!correctoSudoku(i,j)){
+                    estaCorrecto = false;
+                    break;
+                }
+            }
+        }
+        return estaCorrecto;
+    }
+
+    public static int[][] generarSudoku(){
+        sudoku = new int[9][9];
+        boolean flag;
+        for (int i = 0; i < 9; i++) {
+            int posicion = 0;
+            for (int j = 0; j < 9; j++) {
+                sudoku[i][j] = generarValor(posicion);
+                flag=true;
+                if (sudoku[i][j] == 0) {
+                    if (j > 0) {
+                        j = j - 2;
+                        flag=false;
+                    } else {
+                        i--;
+                        j = 8;
+                        flag=false;
+                    }
+                }
+                if (flag) {
+                    if (esCorrecto(i, j)) {
+                        posicion = 0;
+                    } else {
+                        posicion++;
+                        j--;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                sudokuResuelto[i][j] = sudoku[i][j];
+            }
+        }
+        return sudoku;
+    }
+
+    private static boolean comprovaFila(int fila) {
         for (int k = 0; k<9; k++){
             for (int l = 0; l<9; l++){
-                if (k != l && matriz[fila][k] != 0){
-                    if (matriz[fila][k] == matriz[fila][l]){
+                if (k != l && sudoku[fila][k] != 0){
+                    if (sudoku[fila][k] == sudoku[fila][l]){
                         return false;
                     }
                 }
@@ -41,11 +87,11 @@ public class SudokuModel {
         return true;
     }
 
-    public boolean comprovaCol(int columna) {
+    private static boolean comprovaCol(int columna) {
         for (int k = 0; k < 9; k++){
             for (int l = 0; l < 9; l++){
-                if (k != l && matriz[l][columna] != 0){
-                    if (matriz[k][columna] == matriz[l][columna]){
+                if (k != l && sudoku[l][columna] != 0){
+                    if (sudoku[k][columna] == sudoku[l][columna]){
                         return false;
                     }
                 }
@@ -54,7 +100,7 @@ public class SudokuModel {
         return true;
     }
 
-    public boolean comprovaQuad (int fila, int columna) {
+    private static boolean comprovaQuad (int fila, int columna) {
         boolean valido = true;
         int inicioFila = 0;
         int inicioColumna = 0;
@@ -97,8 +143,8 @@ public class SudokuModel {
             for (int b = inicioColumna; b < inicioColumna + 3; b++) {
                 for (int c = inicioFila; c < inicioFila + 3; c++) {
                     for (int d = inicioColumna; d < inicioColumna + 3; d++) {
-                        if (a != c && b != d && matriz[a][b] != 0) {
-                            if (matriz[a][b] == matriz[c][d]) {
+                        if (a != c && b != d && sudoku[a][b] != 0) {
+                            if (sudoku[a][b] == sudoku[c][d]) {
                                 valido = false;
                             }
                         }
@@ -108,26 +154,43 @@ public class SudokuModel {
         }
         return valido;
     }
-
-    public void creaPartida () {
-        Random random = new Random();
-        int numsIntroduits = 20;
-        int fila = 0;
-        int columna = 0;
-        int valor = 0;
-        for (int a = 0; a < numsIntroduits; a++){
-            fila = random.nextInt(9-1);
-            columna = random.nextInt(9-1);
-            valor = random.nextInt(9-1)+1;
-            setVal(fila,columna,valor);
-            while (setVal(fila,columna,valor) == -1){
-                fila = random.nextInt(9-1);
-                columna = random.nextInt(9-1);
-            }
+    public void creaPartida(){
+        generarSudoku();
+        int fila=0;
+        int columna=0;
+        for (int j = 0; j < 70; j++) {
+            fila = (int) (Math.random() * 9);
+            columna = (int) (Math.random() * 9);
+            sudoku[fila][columna] = 0;
         }
     }
-    SudokuModel() {
-        creaPartida();
+
+    private static boolean esCorrecto(int fila, int columna) {
+        return (comprovaFila(fila) & comprovaCol(columna) & comprovaQuad(fila, columna));
     }
+    private static boolean correctoSudoku(int fila, int columna){
+        if (sudoku[fila][columna] != sudokuResuelto[fila][columna]){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private static int generarValor(int posicion) {
+        if (posicion == 0) {
+            for (int i = 0; i < 9; i++) {
+                valores[i] = i + 1;
+            }
+        }
+        if (posicion == 9) {
+            return 0;
+        }
+        int numeroRandom=(int) (Math.random() * (9-posicion));
+        int tmp = valores[8-posicion];
+        valores[8-posicion] = valores[numeroRandom];
+        valores[numeroRandom] = tmp;
+        return valores[8-posicion];
+    }
+
 
 }
