@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity{
                                 refrescaGUI();
                             } else {
                                 adapterView.setSelection(0);
-                                refrescaGUI();
                             }
                         }
                     }
@@ -85,15 +84,25 @@ public class MainActivity extends AppCompatActivity{
         }
         refrescaGUI();
         refrescaGUI();
+        deshabilitarNumRandoms();
     }
     private void refrescaGUI(){
-        for(int i=0;i<9;i++) {
+        for(int i = 0;i < 9;i++) {
             for (int j = 0; j < 9; j++) {
                 if (matriz[i][j].getSelectedItem() != " "){
                     matriz[i][j].setSelection(modelo.getVal(i,j));
-                    matriz[i][j].setEnabled(false);
                 }else {
                     matriz[i][j].setSelection(modelo.getVal(i,j));
+                }
+            }
+        }
+    }
+    private void deshabilitarNumRandoms(){
+        for(int i = 0;i < 9;i++) {
+            for (int j = 0; j < 9; j++) {
+                if (matriz[i][j].getSelectedItem() != " "){
+                    matriz[i][j].setEnabled(false);
+                }else {
                     matriz[i][j].setEnabled(true);
                 }
             }

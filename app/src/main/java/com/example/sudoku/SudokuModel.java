@@ -1,6 +1,8 @@
 package com.example.sudoku;
 
 
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -8,7 +10,6 @@ public class SudokuModel extends AppCompatActivity {
 
     private static int[] valores = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     private static int [][] sudoku= new int[9][9];
-    private static int[][] sudokuResuelto = new int[9][9];
 
     public int getVal(int fila, int columna) {
         return sudoku[fila][columna];
@@ -16,12 +17,12 @@ public class SudokuModel extends AppCompatActivity {
     public boolean setVal(int fila, int columna, int valor) {
         int valorPrevio = sudoku[fila][columna];
         sudoku[fila][columna] = valor;
-        if (sudoku[fila][columna] != sudokuResuelto[fila][columna]){
-            sudoku[fila][columna] = valorPrevio;
-            return false;
-        } else {
+        if (esCorrecto(fila,columna)){
             sudoku[fila][columna] = valor;
             return true;
+        } else {
+            sudoku[fila][columna] = valorPrevio;
+            return false;
         }
     }
 
@@ -29,7 +30,7 @@ public class SudokuModel extends AppCompatActivity {
         boolean estaCorrecto = true;
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if(!correctoSudoku(i,j)){
+                if(sudoku[i][j]==0){
                     estaCorrecto = false;
                     break;
                 }
@@ -45,15 +46,15 @@ public class SudokuModel extends AppCompatActivity {
             int posicion = 0;
             for (int j = 0; j < 9; j++) {
                 sudoku[i][j] = generarValor(posicion);
-                flag=true;
+                flag = true;
                 if (sudoku[i][j] == 0) {
                     if (j > 0) {
                         j = j - 2;
-                        flag=false;
+                        flag = false;
                     } else {
                         i--;
                         j = 8;
-                        flag=false;
+                        flag = false;
                     }
                 }
                 if (flag) {
@@ -64,11 +65,6 @@ public class SudokuModel extends AppCompatActivity {
                         j--;
                     }
                 }
-            }
-        }
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                sudokuResuelto[i][j] = sudoku[i][j];
             }
         }
         return sudoku;
@@ -168,13 +164,6 @@ public class SudokuModel extends AppCompatActivity {
     private static boolean esCorrecto(int fila, int columna) {
         return (comprovaFila(fila) & comprovaCol(columna) & comprovaQuad(fila, columna));
     }
-    private static boolean correctoSudoku(int fila, int columna){
-        if (sudoku[fila][columna] != sudokuResuelto[fila][columna]){
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     private static int generarValor(int posicion) {
         if (posicion == 0) {
@@ -191,6 +180,8 @@ public class SudokuModel extends AppCompatActivity {
         valores[numeroRandom] = tmp;
         return valores[8-posicion];
     }
+
+
 
 
 }
